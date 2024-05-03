@@ -53,9 +53,15 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_name' => 'required',
+            'username' => 'required|unique:users',
+            'name' => 'required',
+            'last_name' => 'required',
+            'phone' => 'required',
+            'address' => 'required',
             'email' => 'required|unique:users',
             'password' => 'required|min:6|confirmed',
+
+
         ]);
 
         if ($validator->fails()) {
@@ -63,12 +69,20 @@ class AuthController extends Controller
         }
 
         $user = new User();
-        $user->user_name = $request->user_name;
+        $user->username = str_replace(' ', '_', $request->username);
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
-        $user->role = $request->role;
+        $user->role = "patient";
+        $user->save();
+        $user->profile()->create([
+            'name' => $request->name,
+            'last_name' => $request->last_name,
+            'phone' => $request->phone,
+            'address' => $request->address
+        ]);
+
 
         $user->save();
-        return response()->json(['message' => "Hola, $user->name tu registro fue completado"], 201);
+        return response()->json(['message' => "Hola, $user->username tu registro fue completado"], 201);
     }
 }

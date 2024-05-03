@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('phone');
             $table->string('img_url')->nullable();
             $table->string('address');
+            $table->date('date_of_birth')->nullable();
+            $table->string('gender')->nullable();
             $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
