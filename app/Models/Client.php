@@ -13,6 +13,10 @@ class Client extends Model
         'activation_date',
         'profile_id',
         'plan_id',
-
     ];
+
+    public function clientMikrotikAndDBLocal()
+    {
+        return $this->hasOne(ClientMikrotikAndDBLocal::class);
+    }
 }
