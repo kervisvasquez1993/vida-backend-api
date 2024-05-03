@@ -91,6 +91,86 @@ class ClientController extends Controller
     /**
      * Display the specified resource.
      */
+
+    public function getClient(Client $client)
+    {
+        $clientMikrotikAndDBLocal = $client->clientMikrotikAndDBLocal;
+
+        $httpClient = new HttpClient();
+        $response = $httpClient->request('POST', 'https://demo.mikrosystem.net/api/v1/GetClientsDetails', [
+            'json' => [
+                'token' => env('MIKROTIK_API_TOKEN'),
+                'idcliente' => $clientMikrotikAndDBLocal->client_mikrotik_id,
+            ],
+        ]);
+        $responseData = json_decode($response->getBody()->getContents());
+        return response()->json($responseData);
+    }
+
+    public function updateClient(Request $request, Client $client)
+    {
+        $request->validate([
+            'nombre' => 'sometimes|required',
+            'correo' => 'sometimes|required|email',
+            'telefono' => 'sometimes|required',
+            'movil' => 'sometimes|required',
+            'cedula' => 'sometimes|required',
+            'codigo' => 'sometimes|required',
+            'direccion_principal' => 'sometimes|required',
+            'campo_personalizado' => 'sometimes|required',
+        ]);
+
+        $clientMikrotikAndDBLocal = $client->clientMikrotikAndDBLocal;
+
+        $httpClient = new HttpClient();
+        $response = $httpClient->request('POST', 'https://demo.mikrosystem.net/api/v1/UpdateUser', [
+            'json' => [
+                'token' => env('MIKROTIK_API_TOKEN'),
+                'idcliente' => $clientMikrotikAndDBLocal->client_mikrotik_id,
+                'datos' => $request->only([
+                    'nombre',
+                    'correo',
+                    'telefono',
+                    'movil',
+                    'cedula',
+                    'codigo',
+                    'direccion_principal',
+                    'campo_personalizado',
+                ]),
+            ],
+        ]);
+        $responseData = json_decode($response->getBody()->getContents());
+        return response()->json($responseData);
+    }
+
+    public function activateClient(Client $client)
+    {
+        $clientMikrotikAndDBLocal = $client->clientMikrotikAndDBLocal;
+        $httpClient = new HttpClient();
+        $response = $httpClient->request('POST', 'https://demo.mikrosystem.net/api/v1/ActiveService', [
+            'json' => [
+                'token' => env('MIKROTIK_API_TOKEN'),
+                'idcliente' => $clientMikrotikAndDBLocal->client_mikrotik_id,
+            ],
+        ]);
+        $responseData = json_decode($response->getBody()->getContents());
+        return response()->json($responseData);
+    }
+
+    public function deactivateClient(Client $client)
+    {
+        $clientMikrotikAndDBLocal = $client->clientMikrotikAndDBLocal;
+
+        $httpClient = new HttpClient();
+        $response = $httpClient->request('POST', 'https://demo.mikrosystem.net/api/v1/SuspendService', [
+            'json' => [
+                'token' => env('MIKROTIK_API_TOKEN'),
+                'idcliente' => $clientMikrotikAndDBLocal->client_mikrotik_id,
+            ],
+        ]);
+        $responseData = json_decode($response->getBody()->getContents());
+        return response()->json($responseData);
+    }
     public function show(Client $client)
     {
         //
