@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('pago_movils', function (Blueprint $table) {
             $table->id();
+            $table->string('bank');
+            $table->string('identification');
+            $table->string('phone');
             $table->timestamps();
         });
     }
