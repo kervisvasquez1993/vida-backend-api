@@ -23,4 +23,7 @@ Route::middleware('auth:api')->group(function () {
     // planes
     Route::get('/planes', [PlanController::class, 'index'])->name('index');
     Route::post('/planes', [PlanController::class, 'store'])->name('store');
+    Route::get('/planes/{id}', [PlanController::class, 'show'])->name('show');
+    Route::put('/planes/{id}', [PlanController::class, 'update'])->name('update');
+    Route::delete('/planes/{id}', [PlanController::class, 'destroy'])->name('destroy');
 });
