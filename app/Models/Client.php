@@ -10,7 +10,6 @@ class Client extends Model
     use HasFactory;
     protected $fillable = [
         'is_active',
-        'activation_date',
         'profile_id',
         'plan_id',
     ];

@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Profile;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
 {
@@ -22,57 +23,28 @@ class ClientController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'username' => 'required|unique:users',
-            'email' => 'required|email|unique:users',
-            'role' => 'required',
-            'password' => 'required',
-            'name' => 'required',
-            'last_name' => 'required',
-            'phone' => 'required',
-            'address' => 'required',
-            'date_of_birth' => 'required|date',
-            'gender' => 'required',
-            'cedula' => 'required',
-            'plan_id' => 'required|exists:plans,id',
-        ]);
-        $user = User::create([
-            'username' => $request->username,
-            'email' => $request->email,
-            'role' => "cliente",
-            'password' => Hash::make($request->password),
-        ]);
-        $profile = Profile::create([
-            'name' => $request->name,
-            'last_name' => $request->last_name,
-            'cedula' => $request->cedula,
-            'phone' => $request->phone,
-            'img_url' => $request->img_url,
-            'address' => $request->address,
-            'date_of_birth' => $request->date_of_birth,
-            'gender' => $request->gender,
-            'user_id' => $user->id,
-        ]);
-        $client = Client::create([
-            'is_active' => true,
-            'activation_date' => Carbon::now(),
-            'profile_id' => $profile->id,
-            'plan_id' => $request->plan_id,
-        ]);
-        return response()->json(['message' => 'Client created successfully', 'client' => $$client], 201);
+       
+        $rules = [
+            'name' => ['required', 'string', 'max:255'],
+            'price' => ['required', 'integer'],
+            'speed' => ['required', 'string', 'max:255', 'unique:plans'],
+            'description' => ['required', 'string'],
+        ];
+        $validator = Validator::make($request->all(), $rules);
+
+        // $client = Client::create([
+        //     'is_active' => true,
+        //     'activation_date' => Carbon::now(),
+        //     'profile_id' => $profile->id,
+        //     'plan_id' => $request->plan_id,
+        // ]);
+        // return response()->json(['message' => 'Client created successfully', 'client' => $$client], 201);
         // $adapter = new MikrotikAdapter();
         // $data = $adapter->adapt($client);
         // $httpClient = new HttpClient();
