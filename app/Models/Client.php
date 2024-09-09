@@ -13,7 +13,6 @@ class Client extends Model
         'profile_id',
         'plan_id',
     ];
-
     public function clientMikrotikAndDBLocal()
     {
         return $this->hasOne(ClientMikrotikAndDBLocal::class);

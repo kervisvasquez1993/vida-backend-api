@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
             $table->boolean('is_active')->default(false);
-            $table->date('activation_date')->nullable();
             $table->foreignId('plan_id')->references('id')->on('plans')->onDelete('set null');
             $table->foreignId('profile_id')->references('id')->on('profiles')->onDelete('cascade');
             $table->timestamps();

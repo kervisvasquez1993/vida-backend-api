@@ -6,10 +6,11 @@ use App\Adapter\MikrotikAdapter;
 use App\Models\ClientMikrotikAndDBLocal;
 use GuzzleHttp\Client as HttpClient;
 use App\Models\Client;
+use App\Models\HistoryActivation;
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\Profile;
 use Carbon\Carbon;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -29,22 +30,47 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-       
-        $rules = [
-            'name' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'integer'],
-            'speed' => ['required', 'string', 'max:255', 'unique:plans'],
-            'description' => ['required', 'string'],
-        ];
-        $validator = Validator::make($request->all(), $rules);
 
-        // $client = Client::create([
-        //     'is_active' => true,
-        //     'activation_date' => Carbon::now(),
-        //     'profile_id' => $profile->id,
-        //     'plan_id' => $request->plan_id,
-        // ]);
-        // return response()->json(['message' => 'Client created successfully', 'client' => $$client], 201);
+        $rules = [
+            'plan_id' => ['required', 'integer', 'exists:plans,id'],
+            'profile_id' => ['required', 'integer', 'exists:profiles,id'],
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validación fallida',
+                'errors' => $validator->errors()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $client = Client::where('profile_id', $request->profile_id)->first();
+        if ($client) {
+            return response()->json(['message' => 'Error al crear registro', 'errors' => 'Client already exists'], Response::HTTP_BAD_REQUEST);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $client = Client::create([
+                'is_active' => true,
+                'profile_id' => $request->profile_id,
+                'plan_id' => $request->plan_id,
+            ]);
+
+            HistoryActivation::create([
+                'client_id' => $client->id,
+                'change_status_data' => Carbon::now(),
+                'status' => 'active',
+            ]);
+
+            DB::commit();
+
+            return response()->json(['message' => 'Client created successfully', 'data' => $client], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error al crear registro', 'errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
         // $adapter = new MikrotikAdapter();
         // $data = $adapter->adapt($client);
         // $httpClient = new HttpClient();
@@ -148,17 +174,6 @@ class ClientController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Client $client)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Client $client)
     {
         //
