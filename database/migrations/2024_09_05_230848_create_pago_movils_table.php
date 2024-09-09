@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('bank');
             $table->string('identification');
             $table->string('phone');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

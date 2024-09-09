@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained();
             $table->date('change_status_data');
             $table->string('status')->default('active');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

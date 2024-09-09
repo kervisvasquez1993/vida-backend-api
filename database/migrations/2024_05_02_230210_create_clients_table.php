@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('plan_id')->references('id')->on('plans')->onDelete('set null');
             $table->foreignId('profile_id')->references('id')->on('profiles')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

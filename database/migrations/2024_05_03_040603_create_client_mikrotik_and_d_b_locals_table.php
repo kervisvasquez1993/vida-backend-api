@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('client_id')->references('id')->on('clients')->onDelete('cascade');
             $table->integer('client_mikrotik_id');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
