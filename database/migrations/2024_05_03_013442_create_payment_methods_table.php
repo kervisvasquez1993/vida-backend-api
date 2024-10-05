@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pre_registros', function (Blueprint $table) {
+        Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
-            $table->softDeletes();
+            $table->string('name');
+            $table->string('provider')->nullable();
+            $table->string('description')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pre_registros');
+        Schema::dropIfExists('payment_methods');
     }
 };
