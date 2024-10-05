@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tecnicos', function (Blueprint $table) {
+        Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('profile_id')->references('id')->on('profiles')->onDelete('cascade');
+            $table->unsignedBigInteger('client_id');
+            $table->decimal('amount', 8, 2);
+            $table->date('due_date');
+            $table->enum('status', ['unpaid', 'paid', 'overdue']);
             $table->timestamps();
-            $table->softDeletes();
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
         });
     }
 
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tecnicos');
+        Schema::dropIfExists('invoices');
     }
 };

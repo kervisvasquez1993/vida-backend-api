@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('client_id');
+            $table->unsignedBigInteger('invoice_id');
+            $table->decimal('amount', 8, 2);
+            $table->string('transaction_id')->unique();
+            $table->enum('status', ['success', 'failure', 'pending']);
             $table->timestamps();
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
         });
     }
 
