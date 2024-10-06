@@ -38,8 +38,6 @@ class ClientController extends Controller
         if (!$client) {
             return response()->json(['message' => 'No client found for this user'], 404);
         }
-
-        // Usar el recurso ClientResource para personalizar la respuesta
         return new ClientResource($client);
     }
     public function store(Request $request)
