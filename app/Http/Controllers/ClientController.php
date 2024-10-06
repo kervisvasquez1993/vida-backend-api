@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Adapter\MikrotikAdapter;
+use App\Http\Resources\ClientResource;
 use App\Models\ClientMikrotikAndDBLocal;
 use GuzzleHttp\Client as HttpClient;
 use App\Models\Client;
@@ -28,12 +29,26 @@ class ClientController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+    public function myPlanClient()
+    {
+        $auth = auth()->user()->load('profile.client.plan');
+        $client = $auth->profile->client;
+
+        if (!$client) {
+            return response()->json(['message' => 'No client found for this user'], 404);
+        }
+
+        // Usar el recurso ClientResource para personalizar la respuesta
+        return new ClientResource($client);
+    }
     public function store(Request $request)
     {
 
         $rules = [
             'plan_id' => ['required', 'integer', 'exists:plans,id'],
             'profile_id' => ['required', 'integer', 'exists:profiles,id'],
+            'client_mikrowisp_id' => ['nullable', 'integer', 'unique:clients,client_mikrowisp_id'], // Verifica que sea único si no es nulo
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -56,6 +71,7 @@ class ClientController extends Controller
                 'is_active' => true,
                 'profile_id' => $request->profile_id,
                 'plan_id' => $request->plan_id,
+                'client_mikrowisp_id' => $request->client_mikrowisp_id
             ]);
 
             HistoryActivation::create([

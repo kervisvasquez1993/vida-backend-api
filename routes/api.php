@@ -25,13 +25,15 @@ Route::middleware('auth:api')->group(function () {
     // modulo para registrar bancos
     Route::post('/pago-movil', [PagoMovilController::class, 'store'])->name('store');
     // planes
-    Route::get('/planes', [PlanController::class, 'index'])->name('index');
-    Route::post('/planes', [PlanController::class, 'store'])->name('store');
-    Route::get('/planes/{id}', [PlanController::class, 'show'])->name('show');
-    Route::put('/planes/{id}', [PlanController::class, 'update'])->name('update');
-    Route::delete('/planes/{id}', [PlanController::class, 'destroy'])->name('destroy');
+    Route::get('/planes', [PlanController::class, 'index'])->name('index.plan');
+    Route::post('/planes', [PlanController::class, 'store'])->name('store.plan');
+    Route::get('/planes/{id}', [PlanController::class, 'show'])->name('show.plan');
+    Route::put('/planes/{id}', [PlanController::class, 'update'])->name('update.plan');
+    Route::delete('/planes/{id}', [PlanController::class, 'destroy'])->name('destroy.plan');
+
     // clientes
     Route::get('/clientes', [ClientController::class, 'index'])->name('index');
+    Route::get('/clientes/my-plans', [ClientController::class, 'myPlanClient'])->name('myPlanClient');
     Route::post('/clientes', [ClientController::class, 'store'])->name('store');
     Route::get('/clientes/{id}', [ClientController::class, 'show'])->name('show');
     Route::put('/clientes/{id}', [ClientController::class, 'update'])->name('update');
