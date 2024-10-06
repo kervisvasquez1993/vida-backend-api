@@ -17,7 +17,9 @@ return new class extends Migration
             $table->decimal('amount', 8, 2);
             $table->date('due_date');
             $table->enum('status', ['unpaid', 'paid', 'overdue']);
+            $table->string('file');
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
         });
     }

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'completed', 'failed']);
             $table->string('transaction_id')->nullable(); // ID de transacción de la pasarela de pagos
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
             $table->foreign('invoice_id')->references('id')->on('invoices');
             $table->foreign('payment_methods_id')->references('id')->on('payment_methods');

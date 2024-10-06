@@ -14,5 +14,6 @@ class Invoice extends Model
         'amount',
         'due_date',
         'status',
+        'file'
     ];
 }
