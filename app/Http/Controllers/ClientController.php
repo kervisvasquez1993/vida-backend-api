@@ -34,7 +34,6 @@ class ClientController extends Controller
     {
         $auth = auth()->user()->load('profile.client.plan');
         $client = $auth->profile->client;
-
         if (!$client) {
             return response()->json(['message' => 'No client found for this user'], 404);
         }
