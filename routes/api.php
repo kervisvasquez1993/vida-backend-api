@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PagoMovilController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
@@ -57,6 +58,14 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/payment-methods/{id}', [PaymentMethodController::class, 'update'])->name('update.payment-methods');
     Route::delete('/payment-methods/{id}', [PaymentMethodController::class, 'destroy'])->name('show.payment-methods');
     Route::post('/payment-methods', [PaymentMethodController::class, 'store'])->name('store.payment-methods');
+
+    // facturas 
+    Route::get('/invoices', [InvoiceController::class, 'index'])->name('index.invoices');
+    Route::get('/my-invoices', [InvoiceController::class, 'myInvoices'])->name('index.invoices');
+    Route::post('/invoices', [InvoiceController::class, 'store'])->name('store.invoices');
+    Route::patch('/invoices/{id}/validate-success', [InvoiceController::class, 'validateSuccess'])->name('validate-success.invoices');
+    Route::patch('/invoices/{id}/validate-failed', [InvoiceController::class, 'validateFailed'])->name('validate-failed.invoices');
+
 
     // Profile
     Route::get('/profiles', [ProfileController::class, 'index'])->name('index.profile');
