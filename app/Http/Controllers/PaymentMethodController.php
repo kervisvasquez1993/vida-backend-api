@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class PaymentMethodController extends Controller
 {
@@ -26,9 +27,18 @@ class PaymentMethodController extends Controller
     {
         $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'provider' => ['required', 'string'],
+            'provider' => [
+                'required',
+                'string',
+                Rule::unique('payment_methods')->where(function ($query) use ($request) {
+                    return $query->where('name', $request->name)
+                        ->where('provider', $request->provider);
+                }),
+            ],
             'description' => ['required', 'string'],
         ];
+
+        // Valida la solicitud
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return response()->json([
@@ -36,13 +46,18 @@ class PaymentMethodController extends Controller
                 'errors' => $validator->errors()
             ], Response::HTTP_BAD_REQUEST);
         }
+
+        // Verifica los permisos
         if (!Gate::allows('validate-role', auth()->user())) {
             return response()->json([
                 'message' => 'Error en privilegio',
                 'error' => 'No tienes permisos para realizar esta acción'
             ], Response::HTTP_UNAUTHORIZED);
         }
+
+        // Crea el método de pago
         $data = PaymentMethod::create($request->all());
+
         return response()->json([
             'message' => 'Recurso creado exitosamente',
             'data' => $data
