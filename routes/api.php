@@ -6,6 +6,7 @@ use App\Http\Controllers\PagoMovilController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -54,4 +55,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/payment-methods/{id}', [PaymentMethodController::class, 'update'])->name('update.payment-methods');
     Route::delete('/payment-methods/{id}', [PaymentMethodController::class, 'delete'])->name('show.payment-methods');
     Route::post('/payment-methods', [PaymentMethodController::class, 'store'])->name('store.payment-methods');
+
+    // Profile
+    Route::get('/profiles', [ProfileController::class, 'index'])->name('index.profile');
 });

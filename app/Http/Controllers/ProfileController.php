@@ -4,15 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Profile;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 
 class ProfileController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if (!Gate::allows('validate-role', auth()->user())) {
+            return response()->json([
+                'message' => 'Error en privilegio',
+                'error' => 'No tienes permisos para realizar esta acción'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+        $data = Profile::with('user')->get();
+        return response()->json($data, Response::HTTP_OK);
     }
 
     /**

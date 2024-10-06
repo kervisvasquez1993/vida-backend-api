@@ -15,4 +15,9 @@ class Client extends Model
         'plan_id',
         'client_mikrowisp_id'
     ];
+
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class);
+    }
 }
