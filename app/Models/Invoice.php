@@ -17,4 +17,9 @@ class Invoice extends Model
         'status',
         'file'
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
 }
