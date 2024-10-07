@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payment_transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('payment_id')->constrained()->onDelete('cascade');  // Relación con la tabla payments
-            $table->string('transaction_id'); 
+            $table->string('transaction_id')->nullable();; 
             $table->enum('status', ['pending', 'completed', 'failed']);  // Estado de la transacción
             $table->timestamps();
             $table->softDeletes();

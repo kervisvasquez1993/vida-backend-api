@@ -47,6 +47,10 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/payments/{id}', [PaymentController::class, 'delete'])->name('delete.payment');
     Route::post('/payments/verify', [PaymentController::class, 'verify'])->name('verify.payments');
 
+    Route::post('/payments/{id}/transaction', [PaymentController::class, 'paymentTransaction'])->name('paymentTransaction.payments-transactions');
+
+
+
     // metodos de de pagos 
     Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('index.payment-methods');
     Route::get('/payment-methods/{id}', [PaymentMethodController::class, 'show'])->name('show.payment-methods');

@@ -11,8 +11,8 @@ class PaymentTransaction extends Model
     use HasFactory, SoftDeletes;
     protected $fillable = [
         'payment_id',
-        'transaction_id',  // ID de la transacción proporcionada por la pasarela
-        'status',  // Estado de la transacción
+        'transaction_id', 
+        'status',  
     ];
     public function payment()
     {
