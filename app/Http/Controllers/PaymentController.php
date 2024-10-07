@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\PaymentTransaction;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -49,10 +50,40 @@ class PaymentController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
+        // Verificar si la factura ya está pagada
+        $invoice = Invoice::where('id', $request->invoice_id)->first();
+        if ($invoice->status === 'paid') {
+            return response()->json([
+                'message' => 'Esta factura ya está pagada'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Verificar si ya existe un pago completado para esta factura
+        $existingPayment = Payment::where('invoice_id', $request->invoice_id)
+            ->where('status', 'completed')
+            ->first();
+
+        if ($existingPayment) {
+            return response()->json([
+                'message' => 'Ya existe un pago completado para esta factura'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Verificar si ya existe una transacción completada para este pago
+        $existingTransaction = PaymentTransaction::where('payment_id', $existingPayment->id ?? 0)
+            ->where('status', 'completed')
+            ->first();
+
+        if ($existingTransaction) {
+            return response()->json([
+                'message' => 'La transacción ya ha sido completada para esta factura'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
         // Crear el registro en la tabla Payment
         $dataToCreate = $request->only(['invoice_id', 'payment_methods_id', 'amount']);
         $dataToCreate['client_id'] = auth()->user()->profile->client->id;
-        $dataToCreate['status'] = 'pending'; // Estado inicial como pendiente
+        $dataToCreate['status'] = 'pending';
         $payment = Payment::create($dataToCreate);
 
         // Preparar la transacción inicial con estado 'pending'
@@ -61,6 +92,7 @@ class PaymentController extends Controller
             'transaction_id' => null, // Aquí podrías poner un identificador del servicio externo si lo necesitas
             'status' => 'pending',
         ]);
+
         $responseFromExternalService = $this->sendPaymentToExternalService($payment);
 
         // Actualizar el estado de la transacción según la respuesta del servicio externo
@@ -71,6 +103,9 @@ class PaymentController extends Controller
                 'transaction_id' => $responseFromExternalService['transaction_id'],
                 'status' => 'completed',
             ]);
+            $invoice->update([
+                'status' => 'paid'
+            ]);
         } else {
             // Si el pago falló
             $payment->update(['status' => 'failed']);
@@ -78,12 +113,16 @@ class PaymentController extends Controller
                 'transaction_id' => $responseFromExternalService['transaction_id'],
                 'status' => 'failed',
             ]);
+            $invoice->update([
+                'status' => 'overdue'
+            ]);
         }
 
         return response()->json([
             'message' => 'Pago procesado exitosamente',
             'payment' => $payment,
-            'transaction' => $paymentTransaction
+            'transaction' => $paymentTransaction,
+            'invoice' => $invoice
         ], Response::HTTP_CREATED);
     }
 
