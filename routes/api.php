@@ -63,8 +63,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/invoices', [InvoiceController::class, 'index'])->name('index.invoices');
     Route::get('/my-invoices', [InvoiceController::class, 'myInvoices'])->name('index.invoices');
     Route::post('/invoices', [InvoiceController::class, 'store'])->name('store.invoices');
-    Route::patch('/invoices/{id}/validate-success', [InvoiceController::class, 'validateSuccess'])->name('validate-success.invoices');
-    Route::patch('/invoices/{id}/validate-failed', [InvoiceController::class, 'validateFailed'])->name('validate-failed.invoices');
+    Route::put('/invoice-status/{id}', [InvoiceController::class, 'invoiceStatusChange'])->name('invoice-status-change.invoices');
 
 
     // Profile
