@@ -133,7 +133,25 @@ class PaymentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id) {}
+    public function show($id)
+    {
+        try {
+            $data = Payment::with(['invoice', 'paymentTransaction'])->findOrFail($id);
+            if (auth()->user()->role !== 'admin' || auth()->user()->profile->client->id !== $data->client_id) {
+                return response()->json([
+                    'message' => 'Error en privilegio',
+                    'error' => 'No tienes permisos para realizar esta acción'
+                ], Response::HTTP_UNAUTHORIZED);
+            }
+
+            return response()->json($data, Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            $modelName = class_basename($e->getModel());
+            return response()->json(['message' => "No query results for id $id of model {$modelName}"], Response::HTTP_NOT_FOUND);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error interno', 'error' =>  $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+    }
 
 
     /**
