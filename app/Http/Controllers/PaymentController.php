@@ -19,16 +19,20 @@ class PaymentController extends Controller
      */
     public function index()
     {
+        // Verificar si el usuario tiene los permisos necesarios
         if (!Gate::allows('validate-role', auth()->user())) {
             return response()->json([
                 'message' => 'Error en privilegio',
                 'error' => 'No tienes permisos para realizar esta acción'
             ], Response::HTTP_UNAUTHORIZED);
         }
-        $data = Payment::all();
+
+        // Eager loading de las relaciones: invoice y paymentTransaction
+        $data = Payment::with(['invoice', 'paymentTransaction'])->get();
+
+        // Retornar la respuesta con los datos cargados
         return response()->json($data, Response::HTTP_OK);
     }
-
 
     /**
      * Store a newly created resource in storage.

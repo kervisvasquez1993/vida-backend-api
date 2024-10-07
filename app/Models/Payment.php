@@ -28,4 +28,8 @@ class Payment extends Model
     {
         return $this->belongsTo(PaymentMethod::class);
     }
+
+    public function paymentTransaction(){
+        return $this->hasMany(PaymentTransaction::class);
+    }
 }
