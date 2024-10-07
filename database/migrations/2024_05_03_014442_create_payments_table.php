@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('payment_methods_id');
             $table->decimal('amount', 8, 2);
             $table->enum('status', ['pending', 'completed', 'failed']);
-            $table->string('transaction_id')->nullable(); // ID de transacción de la pasarela de pagos
+            $table->string('transaction_id')->nullable(); 
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');

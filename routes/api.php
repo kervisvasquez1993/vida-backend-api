@@ -46,12 +46,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/payments/{id}', [PaymentController::class, 'update'])->name('put.payment');
     Route::delete('/payments/{id}', [PaymentController::class, 'delete'])->name('delete.payment');
     Route::post('/payments/verify', [PaymentController::class, 'verify'])->name('verify.payments');
-    // transaction
-    Route::get('/transactions', [TransactionController::class, 'index'])->name('index.transactions');
-    Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('show.transactions');
-    Route::post('/transactions', [TransactionController::class, 'store'])->name('store.transactions');
-    Route::put('/transactions/{id}', [TransactionController::class, 'update'])->name('update.transactions');
-    Route::delete('/transactions/{id}', [TransactionController::class, 'delete'])->name('delete.transactions');
+
     // metodos de de pagos 
     Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('index.payment-methods');
     Route::get('/payment-methods/{id}', [PaymentMethodController::class, 'show'])->name('show.payment-methods');

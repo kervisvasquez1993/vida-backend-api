@@ -12,7 +12,7 @@ class Payment extends Model
     protected $fillable = [
         'client_id',
         'invoice_id',
-        'payment_method_id',
+        'payment_methods_id',
         'amount',
         'status',
     ];
@@ -27,9 +27,5 @@ class Payment extends Model
     public function paymentMethod()
     {
         return $this->belongsTo(PaymentMethod::class);
-    }
-    public function transactions()
-    {
-        return $this->hasMany(PaymentTransaction::class);
     }
 }
