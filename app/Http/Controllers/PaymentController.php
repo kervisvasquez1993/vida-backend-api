@@ -163,10 +163,8 @@ class PaymentController extends Controller
                     'errors' => 'No posee permiso para realizar esta acción'
                 ], Response::HTTP_BAD_REQUEST);
             }
-
             // Actualizar solo el campo 'status' con los datos del request
             $data->update(['status' => $request->input('status')]);
-
             return response()->json($data, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
             $modelName = class_basename($e->getModel());
