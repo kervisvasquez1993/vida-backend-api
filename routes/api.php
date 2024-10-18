@@ -23,8 +23,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/me', [AuthController::class, 'me'])->name('me');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
-    // modulo para registrar bancos
-    Route::post('/pago-movil', [PagoMovilController::class, 'store'])->name('store');
     // planes
     Route::get('/planes', [PlanController::class, 'index'])->name('index.plan');
     Route::post('/planes', [PlanController::class, 'store'])->name('store.plan');
@@ -46,25 +44,18 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/payments/{id}', [PaymentController::class, 'update'])->name('put.payment');
     Route::delete('/payments/{id}', [PaymentController::class, 'delete'])->name('delete.payment');
     Route::post('/payments/verify', [PaymentController::class, 'verify'])->name('verify.payments');
-
     Route::post('/payments/{id}/transaction', [PaymentController::class, 'paymentTransaction'])->name('paymentTransaction.payments-transactions');
-
-
-
     // metodos de de pagos 
     Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('index.payment-methods');
     Route::get('/payment-methods/{id}', [PaymentMethodController::class, 'show'])->name('show.payment-methods');
     Route::put('/payment-methods/{id}', [PaymentMethodController::class, 'update'])->name('update.payment-methods');
     Route::delete('/payment-methods/{id}', [PaymentMethodController::class, 'destroy'])->name('show.payment-methods');
     Route::post('/payment-methods', [PaymentMethodController::class, 'store'])->name('store.payment-methods');
-
     // facturas 
     Route::get('/invoices', [InvoiceController::class, 'index'])->name('index.invoices');
     Route::get('/my-invoices', [InvoiceController::class, 'myInvoices'])->name('index.invoices');
     Route::post('/invoices', [InvoiceController::class, 'store'])->name('store.invoices');
     Route::put('/invoice-status/{id}', [InvoiceController::class, 'invoiceStatusChange'])->name('invoice-status-change.invoices');
-
-
     // Profile
     Route::get('/profiles', [ProfileController::class, 'index'])->name('index.profile');
 });

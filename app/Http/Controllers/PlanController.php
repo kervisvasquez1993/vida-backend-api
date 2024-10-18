@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\Rule;
 
 class PlanController extends Controller
 {
@@ -27,8 +28,8 @@ class PlanController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'integer'],
+            'name' => ['required', 'string', 'max:255', 'unique:plans'],
+            'price' => ['required', 'integer', 'unique:plans'],
             'speed' => ['required', 'string', 'max:255', 'unique:plans'],
             'description' => ['required', 'string'],
         ];
@@ -69,32 +70,47 @@ class PlanController extends Controller
     }
 
 
-    /**
-     * Update the specified resource in storage.
-     */
+
+
     public function update(Request $request, $id)
     {
         try {
+            // Encuentra el plan que se está actualizando
+            $plan = Plan::findOrFail($id);
+
+            // Prepara las reglas de validación
             $rules = [
-                'name' => ['sometimes', 'required', 'string', 'max:255'],
-                'price' => ['sometimes', 'required', 'integer'],
-                'speed' => ['sometimes', 'required', 'string', 'max:255', 'unique:plans'],
+                'name' => ['sometimes', 'required', 'string', 'max:255',  Rule::unique('plans')->ignore($id),],
+                'price' => ['sometimes', 'required', 'integer',  Rule::unique('plans')->ignore($id),],
+                'speed' => [
+                    'sometimes',
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('plans')->ignore($id),
+                ],
                 'description' => ['sometimes', 'required', 'string'],
             ];
+
+            // Realiza la validación
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
                 return response()->json([
                     'message' => 'Validación fallida',
-                    'errors' => $validator->errors()
+                    'errors' => $validator->errors(),
                 ], Response::HTTP_BAD_REQUEST);
             }
+
+            // Verifica los permisos del usuario
             if (!Gate::allows('validate-role', auth()->user())) {
                 return response()->json(['message' => 'Error en privilegio', 'error' => 'No tienes permisos para realizar esta acción'], Response::HTTP_UNAUTHORIZED);
             }
-            $data = Plan::findOrFail($id);
+
+            // Solo actualiza los campos que se han proporcionado
             $validatedData = $request->only(['name', 'price', 'speed', 'description']);
-            $data->update($validatedData);
-            return response()->json($data, Response::HTTP_OK);
+            $plan->update(array_filter($validatedData)); // Filtra valores vacíos
+
+            return response()->json($plan, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
             $modelName = class_basename($e->getModel());
             return response()->json(['message' => "No query results for model {$modelName} {$id}"], Response::HTTP_NOT_FOUND);
