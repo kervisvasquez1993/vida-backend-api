@@ -49,6 +49,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('index.payment-methods');
     Route::get('/payment-methods/{id}', [PaymentMethodController::class, 'show'])->name('show.payment-methods');
     Route::put('/payment-methods/{id}', [PaymentMethodController::class, 'update'])->name('update.payment-methods');
+    Route::patch('/payment-methods/{id}/change-status', [PaymentMethodController::class, 'changeStatus'])->name('changeStatus.payment-methods');
     Route::delete('/payment-methods/{id}', [PaymentMethodController::class, 'destroy'])->name('show.payment-methods');
     Route::post('/payment-methods', [PaymentMethodController::class, 'store'])->name('store.payment-methods');
     // facturas 

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PaymentMethod extends Model
 {
     // TODO: AGREGAR EL SOFTDELETE AL FINAL DE LAS PRUEBAS
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'name',
         'provider',

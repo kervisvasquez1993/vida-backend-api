@@ -1,0 +1,1 @@
+no se puede eliminar los metodos de pagos pero si colocarlo en inactivo

@@ -73,18 +73,20 @@ class PaymentMethodController extends Controller
     {
         try {
             $rules = [
-                'name' => ['sometimes', 'required', 'string', 'max:255'],
+                'name' => ['required', 'string', 'max:255'],
                 'provider' => [
-                    'sometimes',
                     'string',
-                    Rule::unique('payment_methods')->where(function ($query) use ($request) {
-                        return $query->where('name', $request->name)
-                            ->where('provider', $request->provider);
-                    }),
+                    Rule::unique('payment_methods')
+                        ->ignore($id) 
+                        ->where(function ($query) use ($request) {
+                            return $query->where('name', $request->name)
+                                         ->where('description', $request->description)
+                                         ->where('provider', $request->provider);
+                        }),
                 ],
-                'description' => ['sometimes', 'required', 'string', 'max:255', 'unique:plans'],
+                'description' => ['sometimes', 'required', 'string', 'max:255'],
                 'is_active' => ['sometimes', 'required', 'boolean'],
-            ];
+            ];    
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
                 return response()->json([
@@ -118,9 +120,22 @@ class PaymentMethodController extends Controller
             }
             $data = PaymentMethod::findOrFail($id);
             $data->delete();
-            return response()->json(["message" => "Recurso eliminada de forma exitosa"], Response::HTTP_OK);
+            return response()->json($data, Response::HTTP_OK);
         } catch (\Exception $e) {
-            return response()->json(['message' => "Error", 'error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json(['message' => "Error", 'errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
+
+    // public function changeStatus($id){
+    //     try {
+    //         if (!Gate::allows('validate-role', auth()->user())) {
+    //             return response()->json(['message' => 'Error en privilegio', 'error' => 'No tienes permisos para realizar esta acción'], Response::HTTP_UNAUTHORIZED);
+    //         }
+    //         $data = PaymentMethod::findOrFail($id);
+            
+    //         // return response()->json(["message" => "Recurso eliminada de forma exitosa"], Response::HTTP_OK);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['message' => "Error", 'error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+    //     }
+    // }
 }
